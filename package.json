@@ -1,0 +1,32 @@
+{
+  "name": "all-versions",
+  "version": "0.0.0",
+  "description": "Checkout some/all versions at once in subdirs with index page",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx standard && npx tap --cov test*.js test/*.js",
+    "tap": "npx tap --cov test*.js test/*.js",
+    "coveralls": "export COVERALLS_REPO_TOKEN=$(cat $HOME/.coveralls-tokens/$npm_package_name); npx tap --cov test*.js test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sandhawke/all-versions.git"
+  },
+  "keywords": [
+    "sandhawke"
+  ],
+  "author": "Sandro Hawke (http://hawke.org/sandro)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sandhawke/all-versions/issues"
+  },
+  "homepage": "https://github.com/sandhawke/all-versions#readme",
+  "devDependencies": {
+    "tape": "^4.9.1"
+  },
+  "dependencies": {
+    "debug": "^4.1.0",
+    "escape-html-template-tag": "^1.1.0",
+    "simple-git": "^1.122.0"
+  }
+}
