@@ -3,9 +3,11 @@ const simpleGit = require('simple-git/promise')
 const crypto = require('crypto')
 const H = require('escape-html-template-tag')
 const fs = require('fs')
+const globby = require('globby')
 
 const path = '.'
-const build = './build-site/'
+const buildTop = 'build-site'
+const build = `./${buildTop}/`
 const git = simpleGit(path)
 
 // ONLY works in repo root because checkout-index is relative, I guess
@@ -76,11 +78,10 @@ async function main () {
     // console.log(' - checked out')
     await git.raw([
       'checkout-index',
-      // '-a',  // all files
-      // '-f',  // overwrite existing files
-      '-u', // update state information
-      `--prefix=${prefix}`,
-      'index.html'
+      '-a',  // all files
+      '-f',  // overwrite existing files
+      '-u',  // update state information
+      `--prefix=${prefix}`
     ])
 
     // console.log(' - files copied')
@@ -102,15 +103,26 @@ async function main () {
   // maybe .gitignore build-site
   await git.checkout('master')
 
-  const livetext = fs.readFileSync('index.html', 'utf8')
-  try {
-    fs.mkdirSync(build + 'live')
-  } catch (e) { } 
-  fs.writeFileSync(build + 'live/index.html', livetext)
-  await writeStatus(build + 'live', 'Live (not yet given a release version number)')
-  
+  await copyLive()
   fs.writeFileSync(build + 'index.html', out.join('\n'))
   console.log('wrote tree: %o', build)
+}
+
+async function copyLive () {
+  fs.mkdirSync(build + 'live', { recursive: true })
+  for (const filename of await globby(['*'], {
+    expandDirectories: true,
+    gitignore: true
+  })) {
+    console.log(filename)
+    if (filename === buildTop) {
+      console.error(`Put ${buildTop} in your .gitignore and git rm it, or this will get crazy`)
+      process.exit(1)
+    }
+    const livetext = fs.readFileSync(filename, 'utf8')
+    fs.writeFileSync(build + 'live/' + filename, livetext)
+  }
+  await writeStatus(build + 'live', 'Live (no release number)')
 }
 
 async function writeStatus(dir, comment) {
