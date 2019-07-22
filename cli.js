@@ -4,11 +4,12 @@ const crypto = require('crypto')
 const H = require('escape-html-template-tag')
 const fs = require('fs')
 const globby = require('globby')
+const path = require('path')
 
-const path = '.'
+const repoPath = '.'
 const buildTop = 'build-site'
 const build = `./${buildTop}/`
-const git = simpleGit(path)
+const git = simpleGit(repoPath)
 
 // ONLY works in repo root because checkout-index is relative, I guess
 
@@ -109,8 +110,7 @@ async function main () {
 }
 
 async function copyLive () {
-  fs.mkdirSync(build + 'live', { recursive: true })
-  for (const filename of await globby(['*'], {
+  for (const filename of await globby(['**'], {
     expandDirectories: true,
     gitignore: true
   })) {
@@ -120,7 +120,9 @@ async function copyLive () {
       process.exit(1)
     }
     const livetext = fs.readFileSync(filename, 'utf8')
-    fs.writeFileSync(build + 'live/' + filename, livetext)
+    const outFile = build + 'live/' + filename
+    fs.mkdirSync(path.dirname(outFile), { recursive: true })
+    fs.writeFileSync(outFile, livetext)
   }
   await writeStatus(build + 'live', 'Live (no release number)')
 }
