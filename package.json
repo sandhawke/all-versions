@@ -28,6 +28,6 @@
     "debug": "^4.1.0",
     "escape-html-template-tag": "^1.1.0",
     "globby": "^10.0.1",
-    "simple-git": "^1.122.0"
+    "simple-git": "^3.15.0"
   }
 }
